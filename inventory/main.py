@@ -1,53 +1,18 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from redis_om import get_redis_connection, HashModel
 
-app = FastAPI()
+from src.routers.base_routers import BaseRouters
 
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_methods=["*"], allow_headers=["*"])
-
-redis = get_redis_connection(
-    host="",
-    port=15017,
-    password="",
-    decode_responses=True
+app_v1 = BaseRouters.initialize_routes()
+app = FastAPI(
+    version="0.0.1"
 )
 
-class Product(HashModel):
-    name: str
-    price: float
-    quantity: int
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
-    class Meta:
-        database = redis
+app.mount("/api/v1", app_v1)
 
-
-@app.get('/products')
-def get_all_products():
-    return [format_product(pk) for pk in Product.all_pks()]
-
-
-def format_product(pk: str):
-    product = Product.get(pk)
-
-    return {
-        'id': product.pk,
-        'name': product.name,
-        'price': product.price,
-        'quantity': product.quantity
-    }
-
-
-@app.post('/products')
-def create(product: Product):
-    return product.save()
-
-
-@app.get('/products/{pk}')
-def get(pk: str):
-    return Product.get(pk)
-
-
-@app.delete('/products/{pk}')
-def delete(pk: str):
-    return Product.delete(pk)
+if __name__ == "__main__":
+    port = 4000
+    uvicorn.run(app, port=port, host="0.0.0.0")
