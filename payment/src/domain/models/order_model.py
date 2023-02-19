@@ -5,6 +5,7 @@ from src.infrastructure.redis.redis_infrastructure import RedisInfrastructure
 
 class OrderModel(HashModel):
     product_id: str
+    customer_id: str
     price: float
     fee: float
     total: float
