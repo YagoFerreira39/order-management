@@ -18,6 +18,12 @@ class OrderRouters:
         return response
 
     @staticmethod
+    @__order_router.get("/get_order_by_id/{order_id}", tags=["Order"])
+    def get_order_by_id(order_id: str):
+        response = OrderController.get_order_by_id(order_id)
+        return response
+
+    @staticmethod
     @__order_router.post("/create_order", tags=["Order"])
     async def create_order(request: Request):
         body = await request.json()
@@ -27,6 +33,6 @@ class OrderRouters:
             "customer_id": body["customer_id"],
             "quantity": body["quantity"]
         }
-        print(order_input)
-        response = OrderController.create_order(order_input)
+
+        response = await OrderController.create_order(order_input)
         return response
