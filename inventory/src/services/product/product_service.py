@@ -16,5 +16,10 @@ class ProductService:
         return ProductRepository.get_product_by_id(pk)
 
     @staticmethod
+    def create_product(product):
+        response = ProductRepository.create_product(product)
+        return response
+
+    @staticmethod
     def delete_product_by_id(pk: str):
         return ProductRepository.delete_product_by_id(pk)

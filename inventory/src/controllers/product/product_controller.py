@@ -13,6 +13,11 @@ class ProductController:
         return result
 
     @staticmethod
+    def create_product(product):
+        result = ProductService.create_product(product)
+        return result
+
+    @staticmethod
     def delete_product_by_id(pk: str):
         result = ProductService.delete_product_by_id(pk)
         return result
