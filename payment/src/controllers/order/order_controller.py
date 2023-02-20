@@ -11,12 +11,11 @@ class OrderController:
         return result
 
     @classmethod
-    def get_order_by_id(cls, pk: str):
-        result = cls.__order_service.get_order_by_id(pk)
+    def get_order_by_id(cls, order_id: str):
+        result = cls.__order_service.get_order_by_id(order_id)
         return result
 
     @classmethod
-    def create_order(cls, order_input: OrderInput):
-        print(order_input)
-        result = cls.__order_service.create_order(order=order_input)
+    async def create_order(cls, order_input):
+        result = await cls.__order_service.create_order(order=order_input)
         return result

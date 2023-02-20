@@ -14,17 +14,16 @@ class OrderService:
         return response
 
     @classmethod
-    def get_order_by_id(cls, pk: str):
-        response = cls.__order_repository.get_order_by_id(pk)
+    def get_order_by_id(cls, order_id: str):
+        response = cls.__order_repository.get_order_by_id(order_id)
         return response
 
     @classmethod
-    def create_order(cls, order: OrderInput):
-        print(order)
+    async def create_order(cls, order: OrderInput):
         product_data = cls.__get_product_in_order(order["product_id"])
         formatted_order = cls.__format_order(order, product_data)
 
-        response = cls.__order_repository.create_order(formatted_order)
+        response = await cls.__order_repository.create_order(formatted_order)
         return response
 
     @classmethod
@@ -34,7 +33,7 @@ class OrderService:
 
     @staticmethod
     def __get_product_in_order(product_id: str):
-        product_request = requests.get('http://localhost:8000/products/%s' % product_id)
+        product_request = requests.get('http://localhost:8000/api/v1/products/get_product_by_id/%s' % product_id)
         product_data = product_request.json()
         return product_data
 
@@ -47,6 +46,6 @@ class OrderService:
             "total": 1.2 * product["price"],
             "quantity": order["quantity"],
             "customer_id": order["customer_id"],
-            "status": OrderStatusEnum["pending"]
+            "status": "pending"
         }
         return formatted_order

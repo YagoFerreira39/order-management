@@ -19,5 +19,5 @@ app.add_middleware(
 app.mount("/api/v1", app_v1)
 
 if __name__ == "__main__":
-    port = 4001
+    port = 8001
     uvicorn.run(app, port=port, host="0.0.0.0")
