@@ -1,5 +1,6 @@
 from src.domain.enums.order.order_status_enum import OrderStatusEnum
 from src.domain.types.order_input import OrderInput
+from src.infrastructure.kafka.producers.order_producer import OrderProducer
 from src.repositories.order.order_repository import OrderRepository
 
 import requests
@@ -24,6 +25,9 @@ class OrderService:
         formatted_order = cls.__format_order(order, product_data)
 
         response = await cls.__order_repository.create_order(formatted_order)
+
+        OrderProducer.send_order(formatted_order["product_id"], formatted_order)
+
         return response
 
     @classmethod
@@ -49,3 +53,5 @@ class OrderService:
             "status": "pending"
         }
         return formatted_order
+
+
