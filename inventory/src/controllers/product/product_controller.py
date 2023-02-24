@@ -18,6 +18,11 @@ class ProductController:
         return result
 
     @staticmethod
+    async def update_product_quantity_by_product_id(product_id: str, order_quantity: int):
+        result = await ProductService.update_product_quantity_by_product_id(product_id, order_quantity)
+        return result
+
+    @staticmethod
     def delete_product_by_id(pk: str):
         result = ProductService.delete_product_by_id(pk)
         return result

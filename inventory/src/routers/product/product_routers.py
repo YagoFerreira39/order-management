@@ -36,3 +36,12 @@ class ProductRouters:
 
         response = ProductController.create_product(product_input)
         return response
+
+    @staticmethod
+    @__product_router.put("/update_product_quantity_by_product_id/{product_id}", tags=__tags)
+    async def update_product_quantity_by_product_id(product_id: str, request: Request):
+        body = await request.json()
+        print("BODY", body)
+
+        response = await ProductController.update_product_quantity_by_product_id(product_id, body["order_quantity"])
+        return response
