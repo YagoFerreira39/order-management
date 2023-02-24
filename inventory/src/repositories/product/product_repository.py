@@ -21,6 +21,10 @@ class ProductRepository:
         return [format_product(pk) for pk in products]
 
     @classmethod
+    def get_product_by_id(cls, pk: str):
+        return ProductModel.get(pk)
+
+    @classmethod
     def create_product(cls, product_repository_input: ProductRepositoryInput):
 
         product = ProductModel(
@@ -32,8 +36,22 @@ class ProductRepository:
         return product.save()
 
     @classmethod
-    def get_product_by_id(cls, pk: str):
-        return ProductModel.get(pk)
+    async def update_product_quantity_by_product_id(cls, product_id: str, order_quantity: int):
+        product_updated = ProductModel.get(product_id)
+
+        if product_updated.quantity < 1:
+            return {
+                "message": "Product out of stock."
+            }
+
+        new_product_quantity = product_updated.quantity - order_quantity
+
+        print("PROD", new_product_quantity)
+
+        data = {"quantity": new_product_quantity}
+        product_updated.update(**data)
+
+        return product_updated
 
     @classmethod
     def delete_product_by_id(cls, pk: str):
