@@ -29,11 +29,26 @@ class OrderRepository:
 
         order.save()
 
-        return order
+        return order.dict()
 
     @classmethod
-    def delete_product_by_id(cls, pk: str):
-        return OrderModel.delete(pk)
+    async def update_order_by_id(cls, order_id, order_updated_data):
+        order_updated = OrderModel.get(order_id)
+
+        print("UPDATE DATA", order_updated_data)
+
+        if order_updated.status == "completed__":
+            return {
+                "message": "Order is completed and cannot be update anymore."
+            }
+
+        order_updated.update(**order_updated_data)
+
+        return order_updated
+
+    @classmethod
+    def delete_order_by_id(cls, order_id: str):
+        return OrderModel.delete(order_id)
 
     @classmethod
     def __order_completed(cls, order: OrderModel):

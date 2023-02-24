@@ -4,6 +4,7 @@ from src.infrastructure.kafka.producers.order_producer import OrderProducer
 from src.repositories.order.order_repository import OrderRepository
 
 import requests
+import json
 
 
 class OrderService:
@@ -17,6 +18,7 @@ class OrderService:
     @classmethod
     def get_order_by_id(cls, order_id: str):
         response = cls.__order_repository.get_order_by_id(order_id)
+
         return response
 
     @classmethod
@@ -26,13 +28,18 @@ class OrderService:
 
         response = await cls.__order_repository.create_order(formatted_order)
 
-        OrderProducer.send_order(formatted_order["product_id"], formatted_order)
+        OrderProducer.send_order("new_order_created", response)
 
         return response
 
     @classmethod
-    def delete_product_by_id(cls, pk: str):
-        response = cls.__order_repository.delete_product_by_id(pk)
+    async def update_order_by_id(cls, order_id, order_updated_data):
+        response = await cls.__order_repository.update_order_by_id(order_id, order_updated_data)
+        return response
+
+    @classmethod
+    def delete_order_by_id(cls, order_id: str):
+        response = cls.__order_repository.delete_order_by_id(order_id)
         return response
 
     @staticmethod
@@ -47,7 +54,7 @@ class OrderService:
             "product_id": order["product_id"],
             "price": product["price"],
             "fee": 0.2 * product["price"],
-            "total": 1.2 * product["price"],
+            "total": 1.5 * product["price"],
             "quantity": order["quantity"],
             "customer_id": order["customer_id"],
             "status": "pending"

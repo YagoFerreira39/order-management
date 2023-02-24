@@ -19,3 +19,12 @@ class OrderController:
     async def create_order(cls, order_input):
         result = await cls.__order_service.create_order(order=order_input)
         return result
+
+    @classmethod
+    async def update_order(cls, order_id, order_updated_data):
+        result = await cls.__order_service.update_order_by_id(order_id, order_updated_data)
+        return result
+
+    @classmethod
+    def delete_order_by_id(cls, order_id: str):
+        result = cls.__order_service.delete_order_by_id(order_id)

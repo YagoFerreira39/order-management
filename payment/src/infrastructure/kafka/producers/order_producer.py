@@ -5,8 +5,9 @@ from kafka import KafkaProducer
 
 class OrderProducer:
 
-    __order_producer = KafkaProducer(bootstrap_servers="localhost:29092")
-
-    @classmethod
-    def send_order(cls, topic: str, data):
-        return cls.__order_producer.send(topic, json.dumps(data).encode("utf-8"))
+    @staticmethod
+    def send_order(topic: str, data):
+        order_producer = KafkaProducer(bootstrap_servers="localhost:29092")
+        print("PRODUCER", data)
+        return order_producer.send(topic, json.dumps(data).encode("utf-8"))
+        # return order_producer.send(topic, bytes(data, encoding="utf-8"))
