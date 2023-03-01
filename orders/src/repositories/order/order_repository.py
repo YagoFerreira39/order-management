@@ -30,22 +30,20 @@ class OrderRepository(BaseRepository):
         return order
 
     @classmethod
-    async def create_order(cls, order: OrderRepositoryInput):
-        unique_id = uuid.uuid4()
-
+    async def create_order(cls, order: OrderModel):
         new_order = cls._mongodb_connection.insert_one(
             {
-                "unique_id": str(unique_id),
-                "product_id": order["product_id"],
-                "account_id": order["account_id"],
-                "price": order["price"],
-                "fee": order["fee"],
-                "total_price": order["total_price"],
-                "quantity": order["quantity"],
-                "status": order["status"],
-                "type": order["type"],
-                "market": order["market"],
-                "region": order["region"],
+                "unique_id": order.unique_id,
+                "product_id": order.product_id,
+                "account_id": order.account_id,
+                "price": order.price,
+                "fee": order.fee,
+                "total_price": order.total_price,
+                "quantity": order.quantity,
+                "status": order.status,
+                "type": order.type,
+                "market": order.market,
+                "region": order.region,
             }
         )
 

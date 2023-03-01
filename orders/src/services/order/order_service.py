@@ -1,4 +1,7 @@
+import uuid
+
 from src.domain.enums.order.order_status_enum import OrderStatusEnum
+from src.domain.models.order_model import OrderModel
 from src.domain.types.order_input import OrderInput
 from src.infrastructure.kafka.producers.order_producer import OrderProducer
 from src.repositories.order.order_repository import OrderRepository
@@ -28,9 +31,9 @@ class OrderService:
 
         response = await cls.__order_repository.create_order(formatted_order)
 
-        OrderProducer.send_order("new_order_created", formatted_order)
+        OrderProducer.send_order("new_order_created", formatted_order.dict())
 
-        return response
+        return formatted_order.dict()
 
     @classmethod
     async def update_order_by_id(cls, order_id, order_updated_data):
@@ -54,16 +57,20 @@ class OrderService:
 
     @staticmethod
     def __format_order(order, product):
-        formatted_order = {
-            "product_id": order["product_id"],
-            "price": product["price"],
-            "fee": 0.2 * product["price"],
-            "total_price": 1.5 * product["price"],
-            "quantity": order["quantity"],
-            "account_id": order["account_id"],
-            "status": "pending",
-            "type": order["type"],
-            "market": order["market"],
-            "region": order["region"],
-        }
+        unique_id = uuid.uuid4()
+
+        formatted_order = OrderModel(
+            unique_id=str(unique_id),
+            product_id=order["product_id"],
+            price=product["price"],
+            fee=0.2 * product["price"],
+            total_price=1.5 * product["price"],
+            quantity=order["quantity"],
+            account_id=order["account_id"],
+            status="pending",
+            type=order["type"],
+            market=order["market"],
+            region=order["region"],
+        )
+
         return formatted_order
