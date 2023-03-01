@@ -13,8 +13,6 @@ while True:
     for order in order_consumer:
         consumed_order = json.loads(order.value.decode())
 
-        print("PID", consumed_order["product_id"])
-
         product_update_request = requests.put(
             "http://localhost:8000/api/v1/products/update_product_quantity_by_product_id/%s"
             % consumed_order["product_id"],
@@ -23,6 +21,6 @@ while True:
 
         # order_update_request = requests.put(
         #     "http://localhost:8001/api/v1/order/update_order_by_id/%s"
-        #     % consumed_order["pk"],
+        #     % consumed_order["unique_id"],
         #     json.dumps({"status": "completed"}),
         # ).json()

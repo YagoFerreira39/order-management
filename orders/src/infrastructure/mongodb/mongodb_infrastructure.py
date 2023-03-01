@@ -18,8 +18,8 @@ class MongoDBInfrastructure:
         return dbs
 
     def get_db_connection(self) -> Collection:
-        db_name = self.__config["DB_ENV_NAME"]
+        db_name = self.__config["DB_NAME"]
 
         db_connection = self.__mongo_client[db_name]
 
-        return db_connection[self.__config["DB_COLLECTION"]]
+        return db_connection[self.__config["DB_COLLECTION_NAME"]]
