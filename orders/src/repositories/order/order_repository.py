@@ -56,22 +56,18 @@ class OrderRepository(BaseRepository):
 
     @classmethod
     async def update_order_by_id(cls, order_id, order_updated_data):
-        response = cls._mongodb_connection.update_one({
+        result = cls._mongodb_connection.update_one({
             "unique_id": order_id
         }, {
             **order_updated_data
         })
 
-        return response
+        return result
 
     @classmethod
     def delete_order_by_id(cls, order_id: str):
-        return OrderModel.delete(order_id)
+        result = cls._mongodb_connection.delete_one({
+            "unique_id": order_id
+        })
 
-    @classmethod
-    def __order_completed(cls, order: OrderModel):
-        order.status = "completed"
-        order.save()
-        RedisInfrastructure.get_redis_connection().xadd(
-            "order_completed", order.dict(), "*"
-        )
+        return result
