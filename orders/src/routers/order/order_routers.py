@@ -36,9 +36,7 @@ class OrderRouters:
     async def update_order(order_id, request: Request):
         body = await request.json()
 
-        response = cls._mon
-
-        # response = await OrderController.update_order(order_id, body)
+        response = await OrderController.update_order(order_id, body)
         return response
 
     @staticmethod
