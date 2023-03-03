@@ -59,10 +59,13 @@ class OrderRepository(BaseRepository):
         result = cls._mongodb_connection.update_one({
             "unique_id": order_id
         }, {
-            **order_updated_data
+            "$set": {**order_updated_data}
         })
 
-        return result
+        if not result:
+            return {"success": False, "message": "Something went wrong."}
+
+        return {"success": True, "message": "Order updated with success."}
 
     @classmethod
     def delete_order_by_id(cls, order_id: str):
@@ -70,4 +73,7 @@ class OrderRepository(BaseRepository):
             "unique_id": order_id
         })
 
-        return result
+        if not result:
+            return {"success": False, "message": "Something went wrong."}
+
+        return {"success": True, "message": "Order deleted with success."}

@@ -57,23 +57,3 @@ class OrderService:
         )
         product_data = product_request.json()
         return product_data
-
-    @staticmethod
-    def __format_order(order, product):
-        unique_id = uuid.uuid4()
-
-        formatted_order = OrderModel(
-            unique_id=str(unique_id),
-            product_id=order["product_id"],
-            price=product["price"],
-            fee=0.2 * product["price"],
-            total_price=1.5 * product["price"],
-            quantity=order["quantity"],
-            account_id=order["account_id"],
-            status="pending",
-            type=order["type"],
-            market=order["market"],
-            region=order["region"],
-        )
-
-        return formatted_order

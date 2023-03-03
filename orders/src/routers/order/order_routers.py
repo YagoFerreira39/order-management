@@ -40,7 +40,7 @@ class OrderRouters:
         return response
 
     @staticmethod
-    @__order_router.delete("/delete_order_by_id/{order_id}", tags=["Order"])
+    @__order_router.delete("/delete_order/{order_id}", tags=["Order"])
     def delete_order_by_id(order_id: str):
         response = OrderController.delete_order_by_id(order_id)
 
