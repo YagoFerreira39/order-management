@@ -20,7 +20,7 @@ class OrderRepository(BaseRepository):
 
     @classmethod
     def get_order_by_id(cls, order_id: str):
-        order = cls._mongodb_connection.findOne(
+        order = cls._mongodb_connection.find_one(
             {"unique_id": order_id}, {"_id": False}
         )
 
@@ -47,10 +47,12 @@ class OrderRepository(BaseRepository):
             }
         )
 
+        result = cls._mongodb_connection.find_one({"_id": new_order.inserted_id}, {"_id": False})
+
         if not new_order:
             return {"success": False, "message": "Something went wrong."}
 
-        return {"success": True, "message": "Order created with success."}
+        return {"success": True, "message": "Order created with success.", "result": result}
 
     @classmethod
     async def update_order_by_id(cls, order_id, order_updated_data):

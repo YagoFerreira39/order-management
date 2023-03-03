@@ -1,6 +1,7 @@
 import uuid
 
 from src.domain.enums.order.order_status_enum import OrderStatusEnum
+from src.domain.extensions.order.order_extensions import OrderExtension
 from src.domain.models.order_model import OrderModel
 from src.domain.types.order_input import OrderInput
 from src.infrastructure.kafka.producers.order_producer import OrderProducer
@@ -27,13 +28,15 @@ class OrderService:
     @classmethod
     async def create_order(cls, order: OrderInput):
         product_data = cls.__get_product_in_order(order["product_id"])
-        formatted_order = cls.__format_order(order, product_data)
+        formatted_order_model = OrderExtension.to_model(order, product_data)
 
-        response = await cls.__order_repository.create_order(formatted_order)
+        response = await cls.__order_repository.create_order(formatted_order_model)
 
-        OrderProducer.send_order("new_order_created", formatted_order.dict())
+        order_dto = OrderExtension.to_dto(response["result"])
 
-        return formatted_order.dict()
+        OrderProducer.send_order("new_order_created", order_dto)
+
+        return response
 
     @classmethod
     async def update_order_by_id(cls, order_id, order_updated_data):

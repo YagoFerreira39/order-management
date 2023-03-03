@@ -19,8 +19,8 @@ while True:
             json.dumps({"order_quantity": consumed_order["quantity"]}),
         ).json()
 
-        # order_update_request = requests.put(
-        #     "http://localhost:8001/api/v1/order/update_order_by_id/%s"
-        #     % consumed_order["unique_id"],
-        #     json.dumps({"status": "completed"}),
-        # ).json()
+        order_update_request = requests.put(
+            "http://localhost:8001/api/v1/order/update_order_by_id/%s"
+            % consumed_order["unique_id"],
+            json.dumps({"status": "completed"}),
+        ).json()
