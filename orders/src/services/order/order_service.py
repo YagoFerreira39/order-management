@@ -1,14 +1,13 @@
-import uuid
+import json
 
-from src.domain.enums.order.order_status_enum import OrderStatusEnum
 from src.domain.extensions.order.order_extensions import OrderExtension
-from src.domain.models.order_model import OrderModel
 from src.domain.types.order_input import OrderInput
 from src.infrastructure.kafka.producers.order_producer import OrderProducer
 from src.repositories.order.order_repository import OrderRepository
 
+from decouple import config
+
 import requests
-import json
 
 
 class OrderService:
@@ -27,6 +26,8 @@ class OrderService:
 
     @classmethod
     async def create_order(cls, order: OrderInput):
+        topic = config("NEW_ORDER_TOPIC_NAME")
+
         product_data = cls.__get_product_in_order(order["product_id"])
         formatted_order_model = OrderExtension.to_model(order, product_data)
 
@@ -34,7 +35,9 @@ class OrderService:
 
         order_dto = OrderExtension.to_dto(response["result"])
 
-        OrderProducer.send_order("new_order_created", order_dto)
+        order_producer = OrderProducer.get_producer()
+        order_producer.send(topic=topic, value=json.dumps(order_dto).encode("utf-8"))
+        order_producer.flush()
 
         return response
 
