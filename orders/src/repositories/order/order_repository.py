@@ -1,6 +1,8 @@
 import uuid
 from json import dumps
 
+from src.domain.dtos.response.response_dto import ResponseDTO
+from src.domain.exceptions.exceptions import FailedRequest, InvalidOrder
 from src.domain.models.order_model import OrderModel
 from src.domain.types.order_repository_input import OrderRepositoryInput
 from src.infrastructure.redis.redis_infrastructure import RedisInfrastructure
@@ -20,39 +22,39 @@ class OrderRepository(BaseRepository):
 
     @classmethod
     def get_order_by_id(cls, order_id: str):
-        order = cls._mongodb_connection.find_one(
+        result = cls._mongodb_connection.find_one(
             {"unique_id": order_id}, {"_id": False}
         )
 
-        if not order:
-            return {"message": "No order found with the given id."}
+        return result
 
-        return order
 
     @classmethod
     async def create_order(cls, order: OrderModel):
-        new_order = cls._mongodb_connection.insert_one(
-            {
-                "unique_id": order.unique_id,
-                "product_id": order.product_id,
-                "account_id": order.account_id,
-                "price": order.price,
-                "fee": order.fee,
-                "total_price": order.total_price,
-                "quantity": order.quantity,
-                "status": order.status,
-                "type": order.type,
-                "market": order.market,
-                "region": order.region,
-            }
-        )
+        try:
+            new_order = cls._mongodb_connection.insert_one(
+                {
+                    "unique_id": order.unique_id,
+                    "product_id": order.product_id,
+                    "account_id": order.account_id,
+                    "price": order.price,
+                    "fee": order.fee,
+                    "total_price": order.total_price,
+                    "quantity": order.quantity,
+                    "status": order.status,
+                    "type": order.type,
+                    "market": order.market,
+                    "region": order.region,
+                }
+            )
 
-        result = cls._mongodb_connection.find_one({"_id": new_order.inserted_id}, {"_id": False})
+            result = cls._mongodb_connection.find_one({"_id": new_order.inserted_id}, {"_id": False})
 
-        if not new_order:
-            return {"success": False, "message": "Something went wrong."}
+            return result
 
-        return {"success": True, "message": "Order created with success.", "result": result}
+        except Exception as exception:
+            pass
+
 
     @classmethod
     async def update_order_by_id(cls, order_id, order_updated_data):

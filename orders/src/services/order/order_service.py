@@ -5,6 +5,8 @@ from typing import NoReturn
 from decouple import config
 
 from src.domain.dtos.order.order_dto import OrderDTO
+from src.domain.dtos.response.response_dto import ResponseDTO
+from src.domain.exceptions.exceptions import FailedRequest, InvalidOrder
 from src.domain.extensions.order.order_extensions import OrderExtension
 from src.domain.types.order_input import OrderInput
 from src.infrastructure.kafka.producers.order_producer import OrderProducer
@@ -16,27 +18,96 @@ class OrderService:
 
     @staticmethod
     def get_all_orders():
-        response = OrderRepository.get_all_orders()
-        return response
+        response_dto = None
+
+        try:
+            orders = OrderRepository.get_all_orders()
+
+            response_dto = ResponseDTO(
+                success=True,
+                status_code=0,
+                message="",
+                result=orders
+            )
+
+        except FailedRequest:
+            response_dto = ResponseDTO(
+                success=False,
+                status_code=0,
+                message="Something went wrong",
+                result=None
+            )
+
+        finally:
+            response = response_dto.get_response_dto()
+            return response
 
     @staticmethod
     def get_order_by_id(order_id: str):
-        response = OrderRepository.get_order_by_id(order_id)
+        response_dto = None
 
-        return response
+        try:
+            order = OrderRepository.get_order_by_id(order_id)
+
+            if not order:
+                response_dto = ResponseDTO(
+                    success=False,
+                    status_code=0,
+                    message="No order found with the given id.",
+                    result=None
+                )
+            else:
+                response_dto = ResponseDTO(
+                    success=True,
+                    status_code=0,
+                    message="",
+                    result=order
+                )
+
+        except InvalidOrder:
+            response_dto = ResponseDTO(
+                success=False,
+                status_code=0,
+                message="No order found with the given id.",
+                result=None
+            )
+
+        finally:
+            response = response_dto.get_response_dto()
+            return response
 
     @staticmethod
     async def create_order(order: OrderInput):
-        product_data = OrderService.__get_product_in_order(order["product_id"])
-        formatted_order_model = OrderExtension.to_model(order, product_data)
+        response_dto = None
 
-        response = await OrderRepository.create_order(formatted_order_model)
+        try:
+            product_data = OrderService.__get_product_in_order(order["product_id"])
+            formatted_order_model = OrderExtension.to_model(order, product_data)
 
-        order_dto = OrderExtension.to_dto(response["result"])
+            response = await OrderRepository.create_order(formatted_order_model)
 
-        OrderService.__send_order_to_producer(order_dto)
+            order_dto = OrderExtension.to_dto(response)
 
-        return response
+            OrderService.__send_order_to_producer(order_dto)
+
+            response_dto = ResponseDTO(
+                success=True,
+                status_code=1,
+                message="New order created with success.",
+                result=None
+            )
+
+        except Exception as exception:
+            response_dto = ResponseDTO(
+                success=False,
+                status_code=0,
+                message="No order found with the given id.",
+                result=None
+            )
+
+        finally:
+            response = response_dto.get_response_dto()
+            return response
 
     @staticmethod
     async def update_order_by_id(order_id: str, order_updated_data):
