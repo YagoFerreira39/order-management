@@ -12,19 +12,19 @@ class ProductRouters:
         return ProductRouters.__product_router
 
     @staticmethod
-    @__product_router.get("/get_all_products", tags=__tags)
-    def get_all_products():
-        products = ProductController.get_all_products()
+    @__product_router.get("/{symbol}", tags=__tags)
+    async def get_symbol_detail(symbol: str):
+        products = await ProductController.get_symbol_detail(symbol)
         return products
 
     @staticmethod
-    @__product_router.get("/get_product_by_id/{pk}", tags=__tags)
+    @__product_router.get("/{pk}", tags=__tags)
     def get_product_by_id(pk: str):
         products = ProductController.get_product_by_id(pk)
         return products
 
     @staticmethod
-    @__product_router.post("/create_product", tags=__tags)
+    @__product_router.post("", tags=__tags)
     async def create_product(request: Request):
         body = await request.json()
 
@@ -38,7 +38,7 @@ class ProductRouters:
         return response
 
     @staticmethod
-    @__product_router.put("/update_product_quantity_by_product_id/{product_id}", tags=__tags)
+    @__product_router.put("/{product_id}", tags=__tags)
     async def update_product_quantity_by_product_id(product_id: str, request: Request):
         body = await request.json()
         print("BODY", body)

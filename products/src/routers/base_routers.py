@@ -4,12 +4,12 @@ from src.routers.product.product_routers import ProductRouters
 
 
 class BaseRouters:
-    app_v1 = FastAPI()
+    app_v1 = FastAPI(title="Perun")
 
     @classmethod
     def _initialize_routes(cls) -> FastAPI:
         product_routers = ProductRouters.get_product_routers()
-        BaseRouters.app_v1.include_router(router=product_routers, prefix="/products")
+        BaseRouters.app_v1.include_router(router=product_routers, prefix="/product")
 
         return BaseRouters.app_v1
 

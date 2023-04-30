@@ -1,13 +1,14 @@
 from typing import List
 from src.repositories.product.product_repository import ProductRepository
+from src.transport.alpha_vantage.alpha_vantage_transport import AlphaVantageTransport
 
 
 class ProductService:
     @staticmethod
-    def get_all_products():
-        response = ProductRepository.get_all_products()
+    async def get_symbol_detail(symbol: str):
+        av_symbol: str = symbol + ".sao"
 
-        print(response)
+        response = await AlphaVantageTransport().symbol_detail(av_symbol)
 
         return response
 

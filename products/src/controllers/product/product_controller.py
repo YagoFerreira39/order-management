@@ -3,8 +3,8 @@ from src.services.product.product_service import ProductService
 
 class ProductController:
     @staticmethod
-    def get_all_products():
-        result = ProductService.get_all_products()
+    async def get_symbol_detail(symbol: str) -> object:
+        result = await ProductService.get_symbol_detail(symbol)
         return result
 
     @staticmethod
