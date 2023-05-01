@@ -1,16 +1,24 @@
 from typing import List
+
+from src.domain.extensions.symbol_detail_extension import SymbolDetailExtension
+from src.domain.models.symbol.symbol_model import SymbolModel
 from src.repositories.product.product_repository import ProductRepository
 from src.transport.alpha_vantage.alpha_vantage_transport import AlphaVantageTransport
 
 
 class ProductService:
     @staticmethod
-    async def get_symbol_detail(symbol: str):
+    async def get_symbol_detail(symbol: str) -> SymbolModel:
         av_symbol: str = symbol + ".sao"
 
-        response = await AlphaVantageTransport().symbol_detail(av_symbol)
+        response = await AlphaVantageTransport.process_request(
+            AlphaVantageTransport().symbol_detail,
+            symbol=av_symbol
+        )
 
-        return response
+        model_response: SymbolModel = SymbolDetailExtension.to_model(response)
+
+        return model_response
 
     @staticmethod
     def get_product_by_id(pk: str):

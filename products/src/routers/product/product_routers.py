@@ -13,7 +13,7 @@ class ProductRouters:
 
     @staticmethod
     @__product_router.get("/{symbol}", tags=__tags)
-    async def get_symbol_detail(symbol: str):
+    async def get_symbol_detail(symbol: str) -> dict:
         products = await ProductController.get_symbol_detail(symbol)
         return products
 

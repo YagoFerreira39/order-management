@@ -1,9 +1,10 @@
+from src.domain.models.symbol.symbol_model import SymbolModel
 from src.services.product.product_service import ProductService
 
 
 class ProductController:
     @staticmethod
-    async def get_symbol_detail(symbol: str) -> object:
+    async def get_symbol_detail(symbol: str) -> SymbolModel:
         result = await ProductService.get_symbol_detail(symbol)
         return result
 
