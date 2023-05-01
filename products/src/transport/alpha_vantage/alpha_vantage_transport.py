@@ -1,10 +1,11 @@
 import requests
 from decouple import config
 
+from src.core.abstract.transport_abstract import TransportAbstract
 from src.domain.enums.transport.alpha_vantage.alpha_vantage_enum import AlphaVantageEnum
 
 
-class AlphaVantageTransport:
+class AlphaVantageTransport(TransportAbstract):
     __api_url = config("ALPHA_VANTAGE_URL")
     __api_key = config("ALPHA_VANTAGE_KEY")
 
@@ -24,7 +25,7 @@ class AlphaVantageTransport:
     @classmethod
     async def symbol_detail(cls, symbol: str) -> dict:
         params = {
-            "function": AlphaVantageEnum.SYMBOL_DETAIL,
+            "function": "TIME_SERIES_DAILY_ADJUSTED",
             "symbol": symbol,
             "apikey": cls.__api_key,
         }
